@@ -44,15 +44,19 @@
                         </div>
                     </div>
                     <div class="temperature-block">
-                        <p class="temperature"><%= Math.round(weatherData.main.temp) %><span>&#176;</span></p>
-                        <p class="temperature-note">Feels like <%= Math.round(weatherData.main.feels_like) %>&#176;C</p>
+                        <div class="unit-control" role="group" aria-label="Temperature units">
+                            <button type="button" data-temperature-unit="c" aria-pressed="true">&#176;C</button>
+                            <button type="button" data-temperature-unit="f" aria-pressed="false">&#176;F</button>
+                        </div>
+                        <p class="temperature" data-celsius="<%= weatherData.main.temp %>" data-fahrenheit="<%= weatherData.main.temp * 9 / 5 + 32 %>"><%= Math.round(weatherData.main.temp) %><span>&#176;C</span></p>
+                        <p class="temperature-note" data-celsius="<%= weatherData.main.feels_like %>" data-fahrenheit="<%= weatherData.main.feels_like * 9 / 5 + 32 %>">Feels like <%= Math.round(weatherData.main.feels_like) %>&#176;C</p>
                     </div>
                     <div class="temperature-range" aria-label="Today's temperature range">
                         <span>HIGH</span>
-                        <strong><%= Math.round(weatherData.main.temp_max) %>&#176;</strong>
+                        <strong class="range-value" data-celsius="<%= weatherData.main.temp_max %>" data-fahrenheit="<%= weatherData.main.temp_max * 9 / 5 + 32 %>"><%= Math.round(weatherData.main.temp_max) %>&#176;</strong>
                         <span class="range-divider"></span>
                         <span>LOW</span>
-                        <strong><%= Math.round(weatherData.main.temp_min) %>&#176;</strong>
+                        <strong class="range-value" data-celsius="<%= weatherData.main.temp_min %>" data-fahrenheit="<%= weatherData.main.temp_min * 9 / 5 + 32 %>"><%= Math.round(weatherData.main.temp_min) %>&#176;</strong>
                     </div>
                 </section>
 
@@ -72,7 +76,15 @@
                         </article>
                         <article class="info-box">
                             <img src="images/wind.png" alt="">
-                            <div class="info"><p>Wind speed</p><strong><%= windSpeed %><span> km/h</span></strong></div>
+                            <div class="info">
+                                <div class="metric-label"><p>Wind speed</p>
+                                    <span class="unit-control compact" role="group" aria-label="Wind speed units">
+                                        <button type="button" data-wind-unit="kmh" aria-pressed="true">km/h</button>
+                                        <button type="button" data-wind-unit="mph" aria-pressed="false">mph</button>
+                                    </span>
+                                </div>
+                                <strong class="wind-value" data-kmh="<%= weatherData.wind.speed * 3.6 %>" data-mph="<%= weatherData.wind.speed * 2.236936 %>"><%= windSpeed %><span> km/h</span></strong>
+                            </div>
                         </article>
                         <article class="info-box">
                             <svg class="visibility-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>
@@ -128,5 +140,6 @@
             <span>&copy; <%= new Date().getFullYear() %></span>
         </footer>
     </div>
+    <script src="scripts/app.js" defer></script>
 </body>
 </html>

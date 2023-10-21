@@ -212,6 +212,42 @@ input {
 	align-items: flex-start;
 }
 
+.unit-control {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px;
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	background: rgba(5, 22, 41, 0.48);
+}
+
+.unit-control button {
+	min-width: 33px;
+	min-height: 26px;
+	padding: 2px 7px;
+	border: 0;
+	border-radius: 2px;
+	color: var(--muted);
+	background: transparent;
+	cursor: pointer;
+	font-size: 0.72rem;
+	font-weight: 700;
+}
+
+.unit-control button[aria-pressed="true"] {
+	color: #162b3e;
+	background: var(--accent);
+}
+
+.unit-control button:focus-visible {
+	outline: 2px solid var(--cyan);
+	outline-offset: 2px;
+}
+
+.temperature-block > .unit-control {
+	margin: 0 0 12px 9px;
+}
+
 .temperature {
 	margin: -8px 0 0;
 	color: #fff;
@@ -227,6 +263,12 @@ input {
 	color: var(--accent);
 	font-size: 4.25rem;
 	vertical-align: 1.55rem;
+}
+
+.temperature span::after {
+	content: "C";
+	font-size: 0.95rem;
+	vertical-align: 1.7rem;
 }
 
 .temperature-note {
@@ -336,6 +378,23 @@ input {
 	margin: 0 0 6px;
 	color: var(--muted);
 	font-size: 0.82rem;
+}
+
+.metric-label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.unit-control.compact {
+	padding: 1px;
+}
+
+.unit-control.compact button {
+	min-width: 36px;
+	min-height: 20px;
+	padding: 1px 4px;
+	font-size: 0.58rem;
 }
 
 .info strong {
