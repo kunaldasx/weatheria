@@ -29,14 +29,15 @@
 
         <main class="main-content">
             <% if(locals.weatherData){ %>
-                <% const today = new Date(); %>
+                <% const cityTimezone = weatherData.timezone || 0; %>
+                <% const cityNow = new Date(Date.now() + cityTimezone * 1000); %>
                 <% const windSpeed = (weatherData.wind.speed * 3.6).toFixed(1); %>
                 <% const visibilityKm = (weatherData.visibility / 1000).toFixed(1); %>
                 <section class="current-weather" aria-labelledby="city-heading">
                     <div class="weather-copy">
                         <p class="eyebrow">CURRENT CONDITIONS</p>
                         <h1 id="city-heading"><%= weatherData.name %><% if(weatherData.sys.country){ %>, <%= weatherData.sys.country %><% } %></h1>
-                        <p class="current-date"><%= today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) %></p>
+                        <p class="current-date"><%= cityNow.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }) %></p>
                         <div class="condition-line">
                             <img class="weather-icon" src="https://openweathermap.org/img/wn/<%= weatherData.weather[0].icon %>@2x.png" alt="">
                             <span><%= weatherData.weather[0].description %></span>
@@ -83,11 +84,11 @@
                 <section class="sun-details" aria-label="Additional weather data">
                     <div class="data-item">
                         <span>Sunrise</span>
-                        <strong><%= new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) %></strong>
+                        <strong><%= new Date((weatherData.sys.sunrise + cityTimezone) * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "UTC" }) %></strong>
                     </div>
                     <div class="data-item">
                         <span>Sunset</span>
-                        <strong><%= new Date(weatherData.sys.sunset * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) %></strong>
+                        <strong><%= new Date((weatherData.sys.sunset + cityTimezone) * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "UTC" }) %></strong>
                     </div>
                     <div class="data-item">
                         <span>Wind direction</span>
