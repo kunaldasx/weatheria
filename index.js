@@ -3,47 +3,78 @@ import axios from "axios";
 import bodyParser from "body-parser";
 
 const app = express();
-const port = process.env.PORT|3000;
-
-const anAPI = "3HbF+xsKlupDnTKSIvECsw==LcbvvVHOKDVB7qq2";
-const owmAPI = "5768e9edc822ea1131a9076c4252df73";
+const port = Number(process.env.PORT) || 3000;
+const apiNinjasKey = process.env.API_NINJAS_KEY;
+const openWeatherKey = process.env.OPENWEATHER_API_KEY;
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-    res.render("index.ejs");
-})
+	res.render("index.ejs");
+});
 
 // Get Weather
 app.post("/getWeather", async (req, res) => {
-    try {
-        // Get latitudes and longitudes from API Ninja
-        const coordinates = await axios.get("https://api.api-ninjas.com/v1/geocoding?city=" + req.body.city, {
-            headers: {
-                'X-Api-Key': anAPI
-            }
-        });
-        console.log(coordinates.data);
-        const lat = coordinates.data[0].latitude;
-        const lon = coordinates.data[0].longitude;
+	const city = req.body.city?.trim();
 
-        // Get weather details from open weather map
-        const result = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${owmAPI}`)
-        console.log(result.data);
-        res.render("index.ejs", {
-            weatherData: result.data,
-            state: coordinates.data[0].state
-        })
-    }
-    catch (error) {
-        console.log("Failed to make request", error.response.data);
-        res.render("index.ejs", {
-            error: error.message
-        })
-    }
-})
+	if (!city) {
+		return res.status(400).render("index.ejs", {
+			error: "Enter a city or town to search for its weather.",
+		});
+	}
+
+	if (!apiNinjasKey || !openWeatherKey) {
+		return res.status(503).render("index.ejs", {
+			error:
+				"Weather search is not configured. Set API_NINJAS_KEY and OPENWEATHER_API_KEY.",
+		});
+	}
+
+	try {
+		const coordinates = await axios.get(
+			"https://api.api-ninjas.com/v1/geocoding",
+			{
+				params: { city },
+				headers: {
+					"X-Api-Key": apiNinjasKey,
+				},
+			},
+		);
+
+		const location = coordinates.data?.[0];
+		if (!location) {
+			return res.status(404).render("index.ejs", {
+				error: `No location found for "${city}". Check the spelling and try again.`,
+			});
+		}
+
+		const result = await axios.get(
+			"https://api.openweathermap.org/data/2.5/weather",
+			{
+				params: {
+					lat: location.latitude,
+					lon: location.longitude,
+					units: "metric",
+					appid: openWeatherKey,
+				},
+			},
+		);
+
+		res.render("index.ejs", {
+			weatherData: result.data,
+			state: location.state,
+		});
+	} catch (error) {
+		console.error("Weather lookup failed:", error.message);
+		const message =
+			error.response?.status === 401
+				? "The weather service rejected its API key. Check your API configuration."
+				: "Weather data is temporarily unavailable. Please try again shortly.";
+		res.status(502).render("index.ejs", { error: message });
+	}
+});
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-})
+	console.log(`Server running on port ${port}`);
+});
