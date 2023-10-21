@@ -20,12 +20,14 @@ app.post("/getWeather", async (req, res) => {
 
 	if (!city) {
 		return res.status(400).render("index.ejs", {
+			searchCity: city,
 			error: "Enter a city or town to search for its weather.",
 		});
 	}
 
 	if (!apiNinjasKey || !openWeatherKey) {
 		return res.status(503).render("index.ejs", {
+			searchCity: city,
 			error:
 				"Weather search is not configured. Set API_NINJAS_KEY and OPENWEATHER_API_KEY.",
 		});
@@ -45,6 +47,7 @@ app.post("/getWeather", async (req, res) => {
 		const location = coordinates.data?.[0];
 		if (!location) {
 			return res.status(404).render("index.ejs", {
+				searchCity: city,
 				error: `No location found for "${city}". Check the spelling and try again.`,
 			});
 		}
@@ -63,6 +66,7 @@ app.post("/getWeather", async (req, res) => {
 
 		res.render("index.ejs", {
 			weatherData: result.data,
+			searchCity: city,
 		});
 	} catch (error) {
 		console.error("Weather lookup failed:", error.message);
@@ -70,7 +74,7 @@ app.post("/getWeather", async (req, res) => {
 			error.response?.status === 401
 				? "The weather service rejected its API key. Check your API configuration."
 				: "Weather data is temporarily unavailable. Please try again shortly.";
-		res.status(502).render("index.ejs", { error: message });
+		res.status(502).render("index.ejs", { searchCity: city, error: message });
 	}
 });
 
