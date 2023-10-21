@@ -3,155 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weatheria</title>
+    <meta name="theme-color" content="#09213c">
+    <title><%= locals.weatherData ? `${weatherData.name} Weather | Weatheria` : "Weatheria | Local Weather" %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css">
 </head>
-<body background="images/background.jpg">
-    <div class="logo">
-        <img src="images/icon.png" alt="weather icon">
-        <h2>Weatheria</h2>
-    </div>
-    <div class="container">
-        <div class="top-bar">
-            <form action="/getWeather" method="post">
-                <input class="city-name" type="text" placeholder="City/Town......" name="city">
-                <input class="submit-btn" type="submit" name="search" value="&#128269">
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <a class="brand" href="/" aria-label="Weatheria home">
+                <img src="images/icon.png" alt="">
+                <span>weatheria</span>
+            </a>
+            <form class="search-form" action="/getWeather" method="post" role="search">
+                <label class="visually-hidden" for="city-search">Search a city</label>
+                <input id="city-search" class="city-name" type="search" placeholder="Search a city" name="city" autocomplete="address-level2" required>
+                <button class="submit-btn" type="submit" aria-label="Search weather">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+                    <span>Search</span>
+                </button>
             </form>
-        </div>
+        </header>
 
-        <div class="mid-container">
-            
-            <!-- When Weather Data is received -->
+        <main class="main-content">
             <% if(locals.weatherData){ %>
-            
-                <h2 class="city-heading"><%= weatherData.name %><% if(weatherData.sys.country){ %>, <%= weatherData.sys.country %><% } %></h2>
-
-                <div class="weather-main">
-                    <div class="weather-icon">
-                        <img src="http://openweathermap.org/img/w/<%= weatherData.weather[0].icon %>.png" alt="weather icon">
-                    </div>
-                    <div class="date-weather">
-                        <% var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                        var today  = new Date(); %>
-
-                        <!-- Date  -->
-                        <p class="date"><%= today.toLocaleDateString("en-US", options) %></p>
-
-                        <!-- Weather main -->
-                        <p class="weather"><%= weatherData.weather[0].description %></p>
-                    </div>
-                </div>
-                
-                <!-- Temperature -->
-                <p class="temp"><%= weatherData.main.temp %> <sup class="sup">&#8451</sup></p>
-
-                <div class="sec-temp">
-                    <!-- Feels Like -->
-                    <h2 class="feels-like">Feels Like <%= weatherData.main.feels_like %><sup>&#176</sup></h2>
-
-                    <!-- Max and Min Temp -->
-                    <p class="min-max">Min Temp | Max Temp</p>
-                    <p class="min-max"><%= weatherData.main.temp_min %><sup>&#176</sup>| <%= weatherData.main.temp_max %><sup>&#176</sup></p>
-                </div>
-
-
-                <!-- weather info -->
-                <div class="weather-box">
-                    <div class="info-box">
-                        <img src="images/humidity.png" alt="humidity">
-                        <div class="info">
-                            <p>Humidity</p>
-                            <p><%= weatherData.main.humidity %>%</p>
+                <% const today = new Date(); %>
+                <% const windSpeed = (weatherData.wind.speed * 3.6).toFixed(1); %>
+                <% const visibilityKm = (weatherData.visibility / 1000).toFixed(1); %>
+                <section class="current-weather" aria-labelledby="city-heading">
+                    <div class="weather-copy">
+                        <p class="eyebrow">CURRENT CONDITIONS</p>
+                        <h1 id="city-heading"><%= weatherData.name %><% if(weatherData.sys.country){ %>, <%= weatherData.sys.country %><% } %></h1>
+                        <p class="current-date"><%= today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) %></p>
+                        <div class="condition-line">
+                            <img class="weather-icon" src="https://openweathermap.org/img/wn/<%= weatherData.weather[0].icon %>@2x.png" alt="">
+                            <span><%= weatherData.weather[0].description %></span>
                         </div>
                     </div>
-                    <div class="info-box">
-                        <img src="images/pressure.png" alt="pressure">
-                        <div class="info">
-                            <p>Pressure</p>
-                            <p><%= weatherData.main.pressure %>hPa</p>
-                        </div>
+                    <div class="temperature-block">
+                        <p class="temperature"><%= Math.round(weatherData.main.temp) %><span>&#176;</span></p>
+                        <p class="temperature-note">Feels like <%= Math.round(weatherData.main.feels_like) %>&#176;C</p>
                     </div>
-                    <div class="info-box">
-                        <img src="images/wind.png" alt="wind">
-                        <div class="info">
-                            <p>Wind Speed</p>
-
-                            <% const speed = (weatherData.wind.speed * (18/5)).toFixed(2); %>
-                            <p><%= speed %>km/h</p>
-                        </div>
+                    <div class="temperature-range" aria-label="Today's temperature range">
+                        <span>HIGH</span>
+                        <strong><%= Math.round(weatherData.main.temp_max) %>&#176;</strong>
+                        <span class="range-divider"></span>
+                        <span>LOW</span>
+                        <strong><%= Math.round(weatherData.main.temp_min) %>&#176;</strong>
                     </div>
-                    <div class="info-box">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24"><path opacity=".3" d="M12 6a9.77 9.77 0 0 0-8.82 5.5C4.83 14.87 8.21 17 12 17s7.17-2.13 8.82-5.5A9.77 9.77 0 0 0 12 6zm0 10c-2.48 0-4.5-2.02-4.5-4.5S9.52 7 12 7s4.5 2.02 4.5 4.5S14.48 16 12 16z"/><path d="M12 4C7 4 2.73 7.11 1 11.5C2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 13a9.77 9.77 0 0 1-8.82-5.5C4.83 8.13 8.21 6 12 6s7.17 2.13 8.82 5.5A9.77 9.77 0 0 1 12 17zm0-10c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7zm0 7a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5z"/></svg>
-                        <div class="info">
-                            <p>Visibility</p>
-                            <p><%= weatherData.visibility %>m</p>
-                        </div> 
+                </section>
+
+                <section class="conditions-section" aria-labelledby="conditions-heading">
+                    <div class="section-heading">
+                        <h2 id="conditions-heading">Weather details</h2>
+                        <span>MEASURED NOW</span>
                     </div>
-                </div>
-
-
-                <div class="weather-data">
-                    <h2>Weather Data for <%= weatherData.name %></h2>
-                    <!-- Sunrise -->
-                    <div class="data-items">
-                        <p>Sunrise</p>
-                        <% const sunrise = new Date((weatherData.sys.sunrise)*1000).toLocaleTimeString(); %>
-                        <p><%= sunrise %></p>
+                    <div class="weather-box">
+                        <article class="info-box">
+                            <img src="images/humidity.png" alt="">
+                            <div class="info"><p>Humidity</p><strong><%= weatherData.main.humidity %><span>%</span></strong></div>
+                        </article>
+                        <article class="info-box">
+                            <img src="images/pressure.png" alt="">
+                            <div class="info"><p>Pressure</p><strong><%= weatherData.main.pressure %><span> hPa</span></strong></div>
+                        </article>
+                        <article class="info-box">
+                            <img src="images/wind.png" alt="">
+                            <div class="info"><p>Wind speed</p><strong><%= windSpeed %><span> km/h</span></strong></div>
+                        </article>
+                        <article class="info-box">
+                            <svg class="visibility-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>
+                            <div class="info"><p>Visibility</p><strong><%= visibilityKm %><span> km</span></strong></div>
+                        </article>
                     </div>
+                </section>
 
-                    <!-- Sunset -->
-                    <div class="data-items">
-                        <p>Sunset</p>
-                        <% const sunset = new Date((weatherData.sys.sunset)*1000).toLocaleTimeString(); %>
-                        <p><%= sunset %></p>
+                <section class="sun-details" aria-label="Additional weather data">
+                    <div class="data-item">
+                        <span>Sunrise</span>
+                        <strong><%= new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) %></strong>
                     </div>
-
-                    <!-- wind degree -->
-                    <div class="data-items">
-                        <p>Wind Degree</p>
-                        <p><%= weatherData.wind.deg %>&#176</p>
+                    <div class="data-item">
+                        <span>Sunset</span>
+                        <strong><%= new Date(weatherData.sys.sunset * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) %></strong>
                     </div>
-
-                    <!-- Sea Level -->
-                    <div class="data-items">
-                        <p>Sea Level</p>
-                        <p><%= weatherData.main.sea_level %>hpa</p>
+                    <div class="data-item">
+                        <span>Wind direction</span>
+                        <strong><%= weatherData.wind.deg ?? "Unavailable" %><% if(weatherData.wind.deg != null){ %>&#176;<% } %></strong>
                     </div>
-
-                    <!-- Latitude -->
-                    <div class="data-items">
-                        <p>Latitide</p>
-                        <p><%= weatherData.coord.lat %></p>
+                    <div class="data-item">
+                        <span>Sea level</span>
+                        <strong><%= weatherData.main.sea_level ?? "Unavailable" %><% if(weatherData.main.sea_level != null){ %> hPa<% } %></strong>
                     </div>
-
-                    <!-- Longitude -->
-                    <div class="data-items">
-                        <p>Longitude</p>
-                        <p><%= weatherData.coord.lon %></p>
+                    <div class="data-item">
+                        <span>Latitude</span>
+                        <strong><%= weatherData.coord.lat %></strong>
                     </div>
-                </div>
-
-
-            <!-- Incase of error -->
+                    <div class="data-item">
+                        <span>Longitude</span>
+                        <strong><%= weatherData.coord.lon %></strong>
+                    </div>
+                </section>
             <% } else if(locals.error){ %>
-                <div class="message">
-                    <p><%= error; %></p>
-                </div>
-
-            <!-- Default Case -->
-            <% }else{ %>
-                <div class="message">
-                    <p>Please Enter the City/Town Name on the Search Bar in order to get Weather Data.</p>
-                </div>
+                <section class="empty-state" aria-live="polite">
+                    <p class="eyebrow">WEATHERIA</p>
+                    <h1>We couldn't find that forecast.</h1>
+                    <p><%= error %></p>
+                </section>
+            <% } else { %>
+                <section class="empty-state" aria-live="polite">
+                    <p class="eyebrow">A CLEARER LOOK OUTSIDE</p>
+                    <h1>Weather, wherever you are.</h1>
+                    <p>Search for a city to see its current conditions and the details that matter.</p>
+                </section>
             <% } %>
-        </div>
-    </div>
+        </main>
 
-    <footer>
-        &#169 Weatheria. All rights reserved <%= new Date().getFullYear() %>
-    </footer>
+        <footer class="site-footer">
+            <span>Weatheria</span>
+            <span>Current conditions, made clear.</span>
+            <span>&copy; <%= new Date().getFullYear() %></span>
+        </footer>
+    </div>
 </body>
 </html>
