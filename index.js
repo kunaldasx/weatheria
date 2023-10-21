@@ -63,7 +63,6 @@ app.post("/getWeather", async (req, res) => {
 
 		res.render("index.ejs", {
 			weatherData: result.data,
-			state: location.state,
 		});
 	} catch (error) {
 		console.error("Weather lookup failed:", error.message);

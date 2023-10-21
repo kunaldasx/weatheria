@@ -25,9 +25,9 @@
         <div class="mid-container">
             
             <!-- When Weather Data is received -->
-            <% if(locals.weatherData && locals.state){ %>
+            <% if(locals.weatherData){ %>
             
-                <h2 class="city-heading"><%= weatherData.name %>, <%= state %></h2>
+                <h2 class="city-heading"><%= weatherData.name %><% if(weatherData.sys.country){ %>, <%= weatherData.sys.country %><% } %></h2>
 
                 <div class="weather-main">
                     <div class="weather-icon">
