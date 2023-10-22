@@ -48,7 +48,7 @@
                             <button type="button" data-temperature-unit="c" aria-pressed="true">&#176;C</button>
                             <button type="button" data-temperature-unit="f" aria-pressed="false">&#176;F</button>
                         </div>
-                        <p class="temperature" data-celsius="<%= weatherData.main.temp %>" data-fahrenheit="<%= weatherData.main.temp * 9 / 5 + 32 %>"><%= Math.round(weatherData.main.temp) %><span>&#176;C</span></p>
+                        <p class="temperature" data-celsius="<%= weatherData.main.temp %>" data-fahrenheit="<%= weatherData.main.temp * 9 / 5 + 32 %>"><span class="temperature-value"><%= Math.round(weatherData.main.temp) %></span><span class="degree-symbol">&#176;</span><span class="temperature-unit">C</span></p>
                         <p class="temperature-note" data-celsius="<%= weatherData.main.feels_like %>" data-fahrenheit="<%= weatherData.main.feels_like * 9 / 5 + 32 %>">Feels like <%= Math.round(weatherData.main.feels_like) %>&#176;C</p>
                     </div>
                     <div class="temperature-range" aria-label="Today's temperature range">

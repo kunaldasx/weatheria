@@ -259,16 +259,16 @@ input {
 	white-space: nowrap;
 }
 
-.temperature span {
+.temperature .degree-symbol {
 	color: var(--accent);
 	font-size: 4.25rem;
 	vertical-align: 1.55rem;
 }
 
-.temperature span::after {
-	content: "C";
+.temperature .temperature-unit {
+	color: var(--ink);
 	font-size: 0.95rem;
-	vertical-align: 1.7rem;
+	vertical-align: 1.6rem;
 }
 
 .temperature-note {
