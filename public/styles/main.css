@@ -89,6 +89,71 @@ input {
 		background-color 160ms ease;
 }
 
+.search-area {
+	position: relative;
+	width: min(420px, 100%);
+}
+
+.search-area .search-form {
+	width: 100%;
+}
+
+.recent-searches {
+	display: flex;
+	min-height: 25px;
+	align-items: center;
+	gap: 10px;
+	padding: 2px 4px 0;
+	color: var(--muted);
+	font-size: 0.67rem;
+}
+
+.recent-searches[hidden] {
+	display: none;
+}
+
+.recent-searches > span {
+	flex: 0 0 auto;
+	font-size: 0.58rem;
+	font-weight: 700;
+	letter-spacing: 0.8px;
+}
+
+.recent-search-list {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	gap: 11px;
+	overflow: hidden;
+}
+
+.recent-search-list button,
+.clear-recent {
+	padding: 0;
+	border: 0;
+	color: #d7e5f0;
+	background: transparent;
+	cursor: pointer;
+	font-size: 0.68rem;
+	white-space: nowrap;
+}
+
+.recent-search-list button {
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.recent-search-list button:hover,
+.clear-recent:hover {
+	color: var(--accent);
+}
+
+.clear-recent {
+	margin-left: auto;
+	color: var(--muted);
+}
+
 .search-form:focus-within {
 	border-color: var(--cyan);
 	background: var(--glass-strong);
@@ -522,6 +587,10 @@ input {
 		max-width: 330px;
 	}
 
+	.search-area {
+		max-width: 330px;
+	}
+
 	.submit-btn {
 		width: 42px;
 		padding: 0;
@@ -608,6 +677,11 @@ input {
 	}
 
 	.search-form {
+		width: 100%;
+		max-width: none;
+	}
+
+	.search-area {
 		width: 100%;
 		max-width: none;
 		order: 2;

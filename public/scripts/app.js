@@ -2,6 +2,7 @@ const storedTemperatureUnit = localStorage.getItem(
 	"weatheria-temperature-unit",
 );
 const storedWindUnit = localStorage.getItem("weatheria-wind-unit");
+const recentSearchKey = "weatheria-recent-searches";
 
 function setTemperatureUnit(unit) {
 	const fahrenheit = unit === "f";
@@ -56,6 +57,48 @@ document.querySelectorAll("[data-temperature-unit]").forEach((button) => {
 document.querySelectorAll("[data-wind-unit]").forEach((button) => {
 	button.addEventListener("click", () => setWindUnit(button.dataset.windUnit));
 });
+
+const searchForm = document.querySelector(".search-form");
+const searchInput = document.querySelector("#city-search");
+const recentSearches = document.querySelector(".recent-searches");
+const recentSearchList = document.querySelector(".recent-search-list");
+const clearRecentButton = document.querySelector(".clear-recent");
+
+function renderRecentSearches() {
+	const cities = JSON.parse(localStorage.getItem(recentSearchKey) || "[]");
+	recentSearchList.replaceChildren();
+	recentSearches.hidden = cities.length === 0;
+	for (const city of cities) {
+		const button = document.createElement("button");
+		button.type = "button";
+		button.textContent = city;
+		button.addEventListener("click", () => {
+			searchInput.value = city;
+			searchForm.requestSubmit();
+		});
+		recentSearchList.append(button);
+	}
+}
+
+searchForm?.addEventListener("submit", () => {
+	const city = searchInput.value.trim();
+	if (!city) return;
+	const cities = JSON.parse(localStorage.getItem(recentSearchKey) || "[]");
+	const updatedCities = [
+		city,
+		...cities.filter(
+			(recentCity) => recentCity.toLowerCase() !== city.toLowerCase(),
+		),
+	].slice(0, 5);
+	localStorage.setItem(recentSearchKey, JSON.stringify(updatedCities));
+});
+
+clearRecentButton?.addEventListener("click", () => {
+	localStorage.removeItem(recentSearchKey);
+	renderRecentSearches();
+});
+
+if (recentSearches) renderRecentSearches();
 
 if (storedTemperatureUnit === "f") setTemperatureUnit("f");
 if (storedWindUnit === "mph") setWindUnit("mph");

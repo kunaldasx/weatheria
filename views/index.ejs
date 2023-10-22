@@ -25,6 +25,21 @@
                     <span>Search</span>
                 </button>
             </form>
+                <div class="search-area">
+                    <form class="search-form" action="/getWeather" method="post" role="search">
+                        <label class="visually-hidden" for="city-search">Search a city</label>
+                        <input id="city-search" class="city-name" type="search" placeholder="Search a city" name="city" value="<%= locals.searchCity || '' %>" autocomplete="address-level2" required>
+                        <button class="submit-btn" type="submit" aria-label="Search weather">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+                            <span>Search</span>
+                        </button>
+                    </form>
+                    <nav class="recent-searches" aria-label="Recent searches" hidden>
+                        <span>RECENT</span>
+                        <div class="recent-search-list"></div>
+                        <button class="clear-recent" type="button">Clear</button>
+                    </nav>
+                </div>
         </header>
 
         <main class="main-content">
