@@ -93,6 +93,27 @@
                     </div>
                 </section>
 
+                <section class="forecast-section" aria-labelledby="forecast-heading">
+                    <div class="section-heading">
+                        <h2 id="forecast-heading">5-day forecast</h2>
+                        <span>DAILY OUTLOOK</span>
+                    </div>
+                    <% if(locals.forecastDays && forecastDays.length){ %>
+                        <div class="forecast-grid">
+                            <% forecastDays.forEach((day) => { %>
+                                <article class="forecast-day">
+                                    <h3><%= day.date %></h3>
+                                    <img src="https://openweathermap.org/img/wn/<%= day.icon %>@2x.png" alt="">
+                                    <p><%= day.description %></p>
+                                    <div><strong><%= Math.round(day.high) %>&#176;</strong><span><%= Math.round(day.low) %>&#176;</span></div>
+                                </article>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p class="forecast-unavailable">The daily forecast is temporarily unavailable.</p>
+                    <% } %>
+                </section>
+
                 <section class="sun-details" aria-label="Additional weather data">
                     <div class="data-item">
                         <span>Sunrise</span>

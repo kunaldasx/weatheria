@@ -7,6 +7,45 @@ const port = Number(process.env.PORT) || 3000;
 const apiNinjasKey = process.env.API_NINJAS_KEY;
 const openWeatherKey = process.env.OPENWEATHER_API_KEY;
 
+function summarizeForecast(entries, timezoneOffset) {
+	const days = new Map();
+
+	for (const entry of entries) {
+		const localDate = new Date((entry.dt + timezoneOffset) * 1000)
+			.toISOString()
+			.slice(0, 10);
+		if (!days.has(localDate)) days.set(localDate, []);
+		days.get(localDate).push(entry);
+	}
+
+	return [...days.entries()].slice(0, 5).map(([date, entriesForDay]) => {
+		const midday = entriesForDay.reduce((closest, entry) => {
+			const localHour = new Date(
+				(entry.dt + timezoneOffset) * 1000,
+			).getUTCHours();
+			const closestHour = new Date(
+				(closest.dt + timezoneOffset) * 1000,
+			).getUTCHours();
+			return Math.abs(localHour - 12) < Math.abs(closestHour - 12)
+				? entry
+				: closest;
+		});
+		const localDate = new Date(`${date}T12:00:00Z`);
+		return {
+			date: localDate.toLocaleDateString("en-US", {
+				weekday: "short",
+				month: "short",
+				day: "numeric",
+				timeZone: "UTC",
+			}),
+			icon: midday.weather[0].icon,
+			description: midday.weather[0].description,
+			high: Math.max(...entriesForDay.map((entry) => entry.main.temp_max)),
+			low: Math.min(...entriesForDay.map((entry) => entry.main.temp_min)),
+		};
+	});
+}
+
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -63,10 +102,31 @@ app.post("/getWeather", async (req, res) => {
 				},
 			},
 		);
+		let forecastDays = [];
+		try {
+			const forecast = await axios.get(
+				"https://api.openweathermap.org/data/2.5/forecast",
+				{
+					params: {
+						lat: location.latitude,
+						lon: location.longitude,
+						units: "metric",
+						appid: openWeatherKey,
+					},
+				},
+			);
+			forecastDays = summarizeForecast(
+				forecast.data.list || [],
+				result.data.timezone || 0,
+			);
+		} catch (forecastError) {
+			console.error("Forecast lookup failed:", forecastError.message);
+		}
 
 		res.render("index.ejs", {
 			weatherData: result.data,
 			searchCity: city,
+			forecastDays,
 		});
 	} catch (error) {
 		console.error("Weather lookup failed:", error.message);
