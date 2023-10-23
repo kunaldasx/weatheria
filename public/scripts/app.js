@@ -37,7 +37,8 @@ function setWindUnit(unit) {
 	const mph = unit === "mph";
 	document.querySelectorAll(".wind-value").forEach((element) => {
 		const value = Number(element.dataset[mph ? "mph" : "kmh"]);
-		element.innerHTML = `${value.toFixed(1)}<span> ${mph ? "mph" : "km/h"}</span>`;
+		element.firstChild.textContent = value.toFixed(1);
+		element.querySelector("span").textContent = ` ${mph ? "mph" : "km/h"}`;
 	});
 	document.querySelectorAll("[data-wind-unit]").forEach((button) => {
 		button.setAttribute(
@@ -64,8 +65,19 @@ const recentSearches = document.querySelector(".recent-searches");
 const recentSearchList = document.querySelector(".recent-search-list");
 const clearRecentButton = document.querySelector(".clear-recent");
 
+function getRecentCities() {
+	try {
+		const cities = JSON.parse(localStorage.getItem(recentSearchKey) || "[]");
+		return Array.isArray(cities)
+			? cities.filter((city) => typeof city === "string")
+			: [];
+	} catch {
+		return [];
+	}
+}
+
 function renderRecentSearches() {
-	const cities = JSON.parse(localStorage.getItem(recentSearchKey) || "[]");
+	const cities = getRecentCities();
 	recentSearchList.replaceChildren();
 	recentSearches.hidden = cities.length === 0;
 	for (const city of cities) {
@@ -83,7 +95,7 @@ function renderRecentSearches() {
 searchForm?.addEventListener("submit", () => {
 	const city = searchInput.value.trim();
 	if (!city) return;
-	const cities = JSON.parse(localStorage.getItem(recentSearchKey) || "[]");
+	const cities = getRecentCities();
 	const updatedCities = [
 		city,
 		...cities.filter(

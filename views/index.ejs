@@ -37,7 +37,7 @@
         <main class="main-content">
             <% if(locals.weatherData){ %>
                 <% const cityTimezone = weatherData.timezone || 0; %>
-                <% const cityNow = new Date(Date.now() + cityTimezone * 1000); %>
+                <% const cityNow = new Date(((weatherData.dt || Date.now() / 1000) + cityTimezone) * 1000); %>
                 <% const windSpeed = (weatherData.wind.speed * 3.6).toFixed(1); %>
                 <% const visibilityKm = (weatherData.visibility / 1000).toFixed(1); %>
                 <section class="current-weather" aria-labelledby="city-heading">
@@ -112,7 +112,7 @@
                                     <h3><%= day.date %></h3>
                                     <img src="https://openweathermap.org/img/wn/<%= day.icon %>@2x.png" alt="">
                                     <p><%= day.description %></p>
-                                    <div><strong><%= Math.round(day.high) %>&#176;</strong><span><%= Math.round(day.low) %>&#176;</span></div>
+                                    <div><strong class="range-value" data-celsius="<%= day.high %>" data-fahrenheit="<%= day.high * 9 / 5 + 32 %>"><%= Math.round(day.high) %>&#176;</strong><span class="range-value" data-celsius="<%= day.low %>" data-fahrenheit="<%= day.low * 9 / 5 + 32 %>"><%= Math.round(day.low) %>&#176;</span></div>
                                 </article>
                             <% }); %>
                         </div>
