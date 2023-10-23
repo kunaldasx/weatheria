@@ -72,7 +72,8 @@ function getRecentCities() {
 		const seen = new Set();
 		return cities
 			.filter((city) => {
-				if (typeof city !== "string" || seen.has(city.toLowerCase())) return false;
+				if (typeof city !== "string" || seen.has(city.toLowerCase()))
+					return false;
 				seen.add(city.toLowerCase());
 				return true;
 			})
