@@ -68,9 +68,15 @@ const clearRecentButton = document.querySelector(".clear-recent");
 function getRecentCities() {
 	try {
 		const cities = JSON.parse(localStorage.getItem(recentSearchKey) || "[]");
-		return Array.isArray(cities)
-			? cities.filter((city) => typeof city === "string")
-			: [];
+		if (!Array.isArray(cities)) return [];
+		const seen = new Set();
+		return cities
+			.filter((city) => {
+				if (typeof city !== "string" || seen.has(city.toLowerCase())) return false;
+				seen.add(city.toLowerCase());
+				return true;
+			})
+			.slice(0, 5);
 	} catch {
 		return [];
 	}
