@@ -3,7 +3,7 @@ import axios from "axios";
 import bodyParser from "body-parser";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT|3000;
 
 const anAPI = "3HbF+xsKlupDnTKSIvECsw==LcbvvVHOKDVB7qq2";
 const owmAPI = "5768e9edc822ea1131a9076c4252df73";
